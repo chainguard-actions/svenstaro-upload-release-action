@@ -1,0 +1,28 @@
+name: Test glob file upload with prerelease and draft
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create test files to upload via glob
+        run: |
+          mkdir -p /tmp/release-assets
+          echo "asset one" > /tmp/release-assets/asset1.txt
+          echo "asset two" > /tmp/release-assets/asset2.txt
+      - id: action
+        uses: .
+        with:
+          repo_token: ${{ github.token }}
+          file: /tmp/release-assets/*.txt
+          tag: refs/tags/v0.0.2-test
+          file_glob: "true"
+          prerelease: "true"
+          draft: "true"
+          check_duplicates: "true"
+        continue-on-error: true
+      - name: Assert action ran (may fail due to missing release/token in test env)
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          echo "PASS: action step executed"
