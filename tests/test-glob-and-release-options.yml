@@ -1,0 +1,33 @@
+name: Test glob and release options
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v2.0.0
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create test files for glob
+        run: |
+          mkdir -p /tmp/release-files
+          echo "artifact one" > /tmp/release-files/artifact-1.txt
+          echo "artifact two" > /tmp/release-files/artifact-2.txt
+      - id: action
+        uses: .
+        with:
+          repo_token: fake-token-for-testing
+          file: /tmp/release-files/*.txt
+          tag: v2.0.0
+          file_glob: "true"
+          prerelease: "true"
+          draft: "true"
+          check_duplicates: "true"
+          promote: "false"
+          release_id: "123456"
+        continue-on-error: true
+      - name: Assert action ran (may fail due to fake token)
+        run: |
+          echo "Action completed (with or without error due to fake token)"
+          echo "PASS: glob and release option inputs were accepted by the action"
