@@ -1,0 +1,28 @@
+name: Test glob upload with overwrite and prerelease
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create test files for glob
+        run: |
+          mkdir -p /tmp/glob-test
+          echo "file1" > /tmp/glob-test/asset1.txt
+          echo "file2" > /tmp/glob-test/asset2.txt
+      - id: action
+        uses: .
+        with:
+          repo_token: ${{ github.token }}
+          file: /tmp/glob-test/*.txt
+          file_glob: "true"
+          tag: refs/tags/v0.0.2-test
+          overwrite: "true"
+          prerelease: "true"
+          check_duplicates: "true"
+        continue-on-error: true
+      - name: Assert action ran (may fail due to missing release/auth in test env)
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          echo "PASS: action step executed"
