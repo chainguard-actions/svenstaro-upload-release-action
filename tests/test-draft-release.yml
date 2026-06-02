@@ -1,4 +1,4 @@
-name: Test basic upload
+name: Test draft release upload
 on:
   workflow_dispatch:
 jobs:
@@ -8,21 +8,19 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Create a dummy file to upload
-        run: echo "hello world" > /tmp/test-artifact.txt
+        run: echo "draft artifact" > /tmp/draft-artifact.txt
 
-      - name: Run action (expect failure with invalid token)
+      - name: Run action with draft release inputs (expect failure with invalid token)
         id: action
         uses: .
         continue-on-error: true
         with:
           repo_token: "fake-token-for-testing"
-          file: /tmp/test-artifact.txt
-          tag: refs/tags/v0.0.1-test
-          asset_name: test-artifact.txt
-          overwrite: "true"
-          make_latest: "true"
-          release_name: "Test Release"
-          body: "This is a test release body."
+          file: /tmp/draft-artifact.txt
+          tag: refs/tags/v0.0.3-test
+          release_id: "999999999"
+          repo_name: "octocat/Hello-World"
+          target_commit: "main"
 
       - name: Assert action ran (failed gracefully with invalid token)
         env:
