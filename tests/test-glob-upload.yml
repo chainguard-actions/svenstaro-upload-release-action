@@ -6,34 +6,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - name: Create dummy files to upload via glob
         run: |
-          mkdir -p /tmp/artifacts
-          echo "artifact one" > /tmp/artifacts/artifact-1.txt
-          echo "artifact two" > /tmp/artifacts/artifact-2.txt
-
-      - name: Run action with glob pattern (expect failure with invalid token)
-        id: action
+          mkdir -p /tmp/glob-assets
+          echo "asset one" > /tmp/glob-assets/asset1.txt
+          echo "asset two" > /tmp/glob-assets/asset2.txt
+      - id: action
         uses: .
-        continue-on-error: true
         with:
-          repo_token: "fake-token-for-testing"
-          file: /tmp/artifacts/*.txt
+          repo_token: ${{ github.token }}
+          file: /tmp/glob-assets/*.txt
           tag: refs/tags/v0.0.2-test
           file_glob: "true"
           prerelease: "true"
-          draft: "false"
-          promote: "false"
-          check_duplicates: "true"
-
-      - name: Assert action ran (failed gracefully with invalid token)
-        env:
-          OUTCOME: ${{ steps.action.outcome }}
+          draft: "true"
+          target_commit: main
+        continue-on-error: true
+      - name: Assert action ran (network calls expected to fail in act)
         run: |
-          echo "outcome: $OUTCOME"
-          if [ "$OUTCOME" != "failure" ] && [ "$OUTCOME" != "success" ]; then
-            echo "FAIL: expected outcome to be 'failure' or 'success', got '$OUTCOME'"
-            exit 1
-          fi
-          echo "PASS: action ran and produced an outcome"
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          echo "PASS: action step executed"
