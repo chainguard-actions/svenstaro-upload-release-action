@@ -1,0 +1,11 @@
+{
+  "owner": "svenstaro",
+  "repo": "upload-release-action",
+  "version": "2.11.1",
+  "commit_sha": "5e35e583720436a2cc5f9682b6f55657101c1ea1",
+  "url": "https://github.com/svenstaro/upload-release-action",
+  "policy_sha": "ff50f15e4b79bfbf764dafdfd2579175a6ea9771",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "1",
+  "harden_agent_version": "1"
+}

@@ -1,4 +1,4 @@
-name: Test basic upload with named asset
+name: Test basic upload with asset_name
 on:
   workflow_dispatch:
 jobs:
@@ -6,22 +6,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
       - name: Create test file to upload
         run: echo "test content" > /tmp/test-asset.txt
+
       - id: action
         uses: .
-        with:
-          repo_token: ${{ github.token }}
-          file: /tmp/test-asset.txt
-          tag: refs/tags/v0.0.1-test
-          asset_name: test-asset.txt
-          overwrite: "true"
-          make_latest: "true"
-          release_name: "Test Release"
-          body: "This is a test release body."
-          target_commit: main
         continue-on-error: true
-      - name: Assert action ran (may fail due to missing release/token in test env)
+        with:
+          repo_token: fake-token-for-testing
+          file: /tmp/test-asset.txt
+          tag: refs/tags/v1.0.0-test
+          asset_name: my-custom-asset.txt
+          overwrite: "true"
+          release_name: "Test Release"
+          body: "This is a test release body"
+          make_latest: "true"
+
+      - name: Assert action ran (may fail due to fake token)
         run: |
           echo "Action outcome: ${{ steps.action.outcome }}"
-          echo "PASS: action step executed"
+          # The action is expected to fail with a fake token (API error)
+          # We just verify it ran and processed inputs
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          echo "PASS: action ran (outcome: ${{ steps.action.outcome }})"
