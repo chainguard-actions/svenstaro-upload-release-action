@@ -1,7 +1,7 @@
 {
   "ran": true,
   "passed": true,
-  "output": "\n\u003e upload-release-action@2.11.5 test\n\u003e node --experimental-vm-modules ./node_modules/jest/bin/jest.js\n\n(node:64) ExperimentalWarning: VM Modules is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\nPASS __tests__/main.test.ts\n  Upload Release Action\n    ✓ pls write actual test (2 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       1 passed, 1 total\nSnapshots:   0 total\nTime:        4.161 s\nRan all test suites.\n",
-  "duration_ms": 4787,
+  "output": "\n\u003e upload-release-action@2.11.5 test\n\u003e node --experimental-vm-modules ./node_modules/jest/bin/jest.js\n\n(node:65) ExperimentalWarning: VM Modules is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\nPASS __tests__/main.test.ts (5.383 s)\n  Upload Release Action\n    ✓ pls write actual test (2 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       1 passed, 1 total\nSnapshots:   0 total\nTime:        5.675 s\nRan all test suites.\n",
+  "duration_ms": 6487,
   "exit_code": 0
 }
