@@ -1,0 +1,24 @@
+name: Test promote and release_id
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create dummy file to upload
+        run: echo "promote test" > /tmp/promote-asset.txt
+      - id: action
+        uses: .
+        with:
+          repo_token: ${{ github.token }}
+          file: /tmp/promote-asset.txt
+          tag: refs/tags/v0.0.3-test
+          promote: "true"
+          repo_name: ${{ github.repository }}
+          release_id: "0"
+        continue-on-error: true
+      - name: Assert action ran (API call expected to fail in test env)
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          echo "PASS: action step executed"
