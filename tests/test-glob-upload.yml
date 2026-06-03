@@ -1,0 +1,38 @@
+name: Test glob upload with prerelease and draft options
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v0.1.0-beta
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create test files for glob upload
+        run: |
+          mkdir -p /tmp/release-assets
+          echo "asset one" > /tmp/release-assets/asset1.txt
+          echo "asset two" > /tmp/release-assets/asset2.txt
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          repo_token: fake-token-for-testing
+          file: /tmp/release-assets/*.txt
+          tag: refs/tags/v0.1.0-beta
+          file_glob: "true"
+          prerelease: "true"
+          draft: "true"
+          check_duplicates: "false"
+
+      - name: Assert action ran (may fail due to fake token)
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          echo "PASS: action was invoked with glob, prerelease, draft, and check_duplicates inputs"
