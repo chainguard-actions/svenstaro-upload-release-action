@@ -8,27 +8,27 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Create dummy files to upload via glob
         run: |
-          mkdir -p /tmp/glob-assets
-          echo "asset one" > /tmp/glob-assets/asset-one.txt
-          echo "asset two" > /tmp/glob-assets/asset-two.txt
+          mkdir -p /tmp/release-assets
+          echo "asset one" > /tmp/release-assets/asset1.txt
+          echo "asset two" > /tmp/release-assets/asset2.txt
       - id: action
         uses: .
         continue-on-error: true
         with:
           repo_token: fake-token-for-testing
-          file: /tmp/glob-assets/*.txt
+          file: /tmp/release-assets/*.txt
           tag: refs/tags/v0.0.2-test
           file_glob: "true"
           prerelease: "true"
           draft: "false"
           check_duplicates: "true"
-      - name: Assert action ran (expected to fail without real token)
+      - name: Assert action ran (expected to fail due to fake token)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
-          echo "action outcome: $OUTCOME"
+          echo "outcome: $OUTCOME"
           if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action executed"
+            echo "PASS: action ran as expected"
           else
             echo "FAIL: unexpected outcome: $OUTCOME"
             exit 1

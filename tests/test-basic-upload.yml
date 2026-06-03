@@ -21,13 +21,13 @@ jobs:
           release_name: "Test Release"
           body: "This is a test release body."
           target_commit: main
-      - name: Assert action ran (expected to fail without real token)
+      - name: Assert action ran (expected to fail due to fake token)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
-          echo "action outcome: $OUTCOME"
+          echo "outcome: $OUTCOME"
           if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action executed"
+            echo "PASS: action ran as expected"
           else
             echo "FAIL: unexpected outcome: $OUTCOME"
             exit 1
