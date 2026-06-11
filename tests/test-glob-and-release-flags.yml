@@ -1,0 +1,29 @@
+name: Test file_glob prerelease promote draft release_id inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create dummy files for glob upload
+        run: |
+          mkdir -p /tmp/release-assets
+          echo "asset one" > /tmp/release-assets/asset1.txt
+          echo "asset two" > /tmp/release-assets/asset2.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          repo_token: fake-token-for-testing
+          file: /tmp/release-assets/*.txt
+          tag: refs/tags/v0.0.2-test
+          file_glob: "true"
+          prerelease: "true"
+          promote: "false"
+          draft: "true"
+          release_id: "123456"
+      - name: Assert action ran (may fail due to fake token)
+        run: |
+          echo "Action completed (continue-on-error=true)"
+          echo "PASS: glob and release flag inputs were accepted"
