@@ -1,4 +1,4 @@
-name: Test basic upload inputs
+name: Test glob and release_id inputs
 on:
   workflow_dispatch:
 jobs:
@@ -7,27 +7,21 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Create dummy file to upload
-        run: echo "hello world" > /tmp/test-asset.txt
+      - name: Create dummy files to upload via glob
+        run: |
+          mkdir -p /tmp/release-assets
+          echo "asset one" > /tmp/release-assets/asset1.txt
+          echo "asset two" > /tmp/release-assets/asset2.txt
 
       - id: action
         uses: .
         continue-on-error: true
         with:
           repo_token: fake-token-for-testing
-          file: /tmp/test-asset.txt
-          tag: refs/tags/v0.0.1-test
-          asset_name: test-asset.txt
-          overwrite: "true"
-          body: "Test release body"
-          release_name: "Test Release"
-          target_commit: main
-          repo_name: test-owner/test-repo
-          make_latest: "false"
-          draft: "false"
-          prerelease: "false"
-          check_duplicates: "true"
-          promote: "false"
+          file: /tmp/release-assets/*.txt
+          tag: refs/tags/v0.0.2-test
+          file_glob: "true"
+          release_id: "999999999"
 
       - name: Assert action ran (may fail due to fake token)
         run: |
