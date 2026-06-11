@@ -1,7 +1,5 @@
 {
   "ran": true,
   "passed": true,
-  "output": "\n\u003e upload-release-action@2.11.4 test\n\u003e jest\n\nPASS __tests__/main.test.ts (5.461 s)\n  Upload Release Action\n    ✓ pls write actual test (3 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       1 passed, 1 total\nSnapshots:   0 total\nTime:        5.833 s\nRan all test suites.\n",
-  "duration_ms": 6733,
   "exit_code": 0
 }
