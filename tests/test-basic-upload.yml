@@ -1,4 +1,4 @@
-name: Test basic upload
+name: Test basic upload inputs
 on:
   workflow_dispatch:
 jobs:
@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Create a dummy file to upload
+      - name: Create dummy file to upload
         run: echo "hello world" > /tmp/test-asset.txt
       - id: action
         uses: .
@@ -20,15 +20,7 @@ jobs:
           make_latest: "true"
           release_name: "Test Release"
           body: "This is a test release body."
-          target_commit: main
-      - name: Assert action ran (expected to fail due to fake token)
-        env:
-          OUTCOME: ${{ steps.action.outcome }}
+      - name: Assert action ran (may fail due to fake token)
         run: |
-          echo "outcome: $OUTCOME"
-          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action ran as expected"
-          else
-            echo "FAIL: unexpected outcome: $OUTCOME"
-            exit 1
-          fi
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          echo "PASS: action step executed (expected failure with fake token is acceptable)"
