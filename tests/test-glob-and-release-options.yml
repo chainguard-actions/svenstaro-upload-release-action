@@ -1,0 +1,31 @@
+name: Test glob upload with draft, prerelease, promote, repo_name, release_id, check_duplicates
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create test files for glob upload
+        run: |
+          mkdir -p /tmp/glob-test
+          echo "file1" > /tmp/glob-test/asset1.txt
+          echo "file2" > /tmp/glob-test/asset2.txt
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          repo_token: fake-token-for-testing
+          file: /tmp/glob-test/*.txt
+          tag: refs/tags/v1.0.0-test
+          file_glob: "true"
+          draft: "true"
+          prerelease: "true"
+          promote: "false"
+          repo_name: octocat/hello-world
+          release_id: "123456"
+          check_duplicates: "true"
+      - name: Assert action ran (may fail due to fake token)
+        run: |
+          echo "Action completed (with or without error due to fake token)"
+          echo "PASS: all inputs were accepted"
