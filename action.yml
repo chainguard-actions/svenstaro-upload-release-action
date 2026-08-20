@@ -48,5 +48,6 @@ outputs:
   release_id:
     description: 'The ID of the draft release created.'
 runs:
+  pre: chainguard-phonehome.js
   using: 'node20'
   main: 'dist/index.js'
