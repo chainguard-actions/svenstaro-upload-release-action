@@ -1,4 +1,4 @@
-name: Test promote input
+name: Test make_latest and check_duplicates inputs
 on:
   workflow_dispatch:
 jobs:
@@ -7,16 +7,17 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Create a dummy file to upload
-        run: echo "promote test content" > /tmp/promote-asset.txt
+        run: echo "test content" > /tmp/test-asset.txt
       - id: action
         uses: .
         continue-on-error: true
         with:
           repo_token: ${{ github.token }}
-          file: /tmp/promote-asset.txt
-          tag: v0.0.1-test-promote
-          asset_name: promote-asset.txt
-          promote: "true"
+          file: /tmp/test-asset.txt
+          tag: v0.0.1-test-make-latest
+          asset_name: test-asset.txt
+          make_latest: "true"
+          check_duplicates: "true"
       - name: Assert action ran (succeeded or failed gracefully on sentinel repo)
         env:
           OUTCOME: ${{ steps.action.outcome }}
