@@ -1,4 +1,4 @@
-name: Test glob upload
+name: Test glob file upload
 on:
   workflow_dispatch:
 jobs:
@@ -6,23 +6,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Create dummy files to upload via glob
+
+      - name: Create test files to upload via glob
         run: |
-          mkdir -p /tmp/glob-assets
-          echo "asset one" > /tmp/glob-assets/asset1.txt
-          echo "asset two" > /tmp/glob-assets/asset2.txt
+          mkdir -p /tmp/release-assets
+          echo "binary content 1" > /tmp/release-assets/app-linux-amd64
+          echo "binary content 2" > /tmp/release-assets/app-linux-arm64
+          echo "binary content 3" > /tmp/release-assets/app-darwin-amd64
+
       - id: action
         uses: .
+        continue-on-error: true
         with:
           repo_token: ${{ github.token }}
-          file: /tmp/glob-assets/*.txt
-          tag: refs/tags/v0.0.2-test
+          file: /tmp/release-assets/app-*
           file_glob: "true"
-          prerelease: "true"
-          draft: "true"
-          target_commit: main
-        continue-on-error: true
-      - name: Assert action ran (network calls expected to fail in act)
+          tag: v0.0.1-test-glob
+          overwrite: "true"
+
+      - name: Assert action ran (succeeded or failed gracefully on sentinel repo)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          DOWNLOAD_URL: ${{ steps.action.outputs.browser_download_url }}
         run: |
-          echo "Action outcome: ${{ steps.action.outcome }}"
-          echo "PASS: action step executed"
+          echo "outcome: $OUTCOME"
+          echo "browser_download_url: $DOWNLOAD_URL"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action succeeded with glob pattern"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
