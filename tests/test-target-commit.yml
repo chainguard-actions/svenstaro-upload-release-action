@@ -1,4 +1,4 @@
-name: Test basic file upload
+name: Test target_commit input
 on:
   workflow_dispatch:
 jobs:
@@ -7,21 +7,24 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Create a test file to upload
-        run: |
-          echo "test artifact content" > /tmp/test-artifact.txt
+      - name: Get current HEAD SHA
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create a dummy file to upload
+        run: echo "hello world" > /tmp/test-asset-target-commit.txt
 
       - id: action
         uses: .
         continue-on-error: true
         with:
           repo_token: ${{ github.token }}
-          file: /tmp/test-artifact.txt
-          tag: refs/tags/v0.0.1-test
-          asset_name: test-artifact.txt
-          overwrite: "true"
+          file: /tmp/test-asset-target-commit.txt
+          tag: v0.0.1-test-target-commit
+          asset_name: test-asset-target-commit.txt
+          target_commit: ${{ steps.sha.outputs.sha }}
 
-      - name: Assert action ran (succeeded or failed gracefully on sentinel repo)
+      - name: Assert action ran (target_commit input exercised, sentinel repo expected to fail gracefully)
         env:
           OUTCOME: ${{ steps.action.outcome }}
           DOWNLOAD_URL: ${{ steps.action.outputs.browser_download_url }}

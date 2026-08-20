@@ -1,4 +1,4 @@
-name: Test basic file upload
+name: Test prerelease upload
 on:
   workflow_dispatch:
 jobs:
@@ -9,16 +9,21 @@ jobs:
 
       - name: Create a test file to upload
         run: |
-          echo "test artifact content" > /tmp/test-artifact.txt
+          echo "prerelease artifact content" > /tmp/prerelease-artifact.tar.gz
 
       - id: action
         uses: .
         continue-on-error: true
         with:
           repo_token: ${{ github.token }}
-          file: /tmp/test-artifact.txt
-          tag: refs/tags/v0.0.1-test
-          asset_name: test-artifact.txt
+          file: /tmp/prerelease-artifact.tar.gz
+          tag: refs/tags/v0.0.4-alpha
+          asset_name: prerelease-artifact.tar.gz
+          prerelease: "true"
+          promote: "false"
+          make_latest: "false"
+          release_name: "Alpha Pre-release"
+          body: "This is an alpha pre-release for testing."
           overwrite: "true"
 
       - name: Assert action ran (succeeded or failed gracefully on sentinel repo)
@@ -33,7 +38,7 @@ jobs:
               echo "FAIL: action succeeded but browser_download_url is empty"
               exit 1
             fi
-            echo "PASS: got download URL '$DOWNLOAD_URL'"
+            echo "PASS: prerelease upload succeeded with URL '$DOWNLOAD_URL'"
           elif [ "$OUTCOME" = "failure" ]; then
             echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
           else

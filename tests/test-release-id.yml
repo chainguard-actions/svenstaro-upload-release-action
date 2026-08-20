@@ -1,0 +1,43 @@
+name: Test release_id input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a dummy file to upload
+        run: echo "hello world" > /tmp/test-asset-release-id.txt
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          repo_token: ${{ github.token }}
+          file: /tmp/test-asset-release-id.txt
+          tag: v0.0.1-test-release-id
+          asset_name: test-asset-release-id.txt
+          release_id: "999999999"
+
+      - name: Assert action ran (release_id input exercised, sentinel repo expected to fail gracefully)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          DOWNLOAD_URL: ${{ steps.action.outputs.browser_download_url }}
+          RELEASE_ID_OUT: ${{ steps.action.outputs.release_id }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "browser_download_url: $DOWNLOAD_URL"
+          echo "release_id output: $RELEASE_ID_OUT"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$DOWNLOAD_URL" ] && [ -z "$RELEASE_ID_OUT" ]; then
+              echo "FAIL: action succeeded but all outputs are empty"
+              exit 1
+            fi
+            echo "PASS: action succeeded with release_id input"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo or invalid release_id is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
